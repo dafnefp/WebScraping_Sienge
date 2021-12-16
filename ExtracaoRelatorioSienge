@@ -1,0 +1,672 @@
+#avisos ao usuário do app
+from tkinter import *
+from ctypes import *
+from ctypes import windll
+import pyautogui
+import time 
+import pyperclip
+import os
+from pathlib import Path
+import pandas as pd
+import datetime as dt
+from datetime import datetime
+import shutil
+
+try:
+    #FUNÇÕES
+    
+    #Caixa de avisos
+    class Aviso:
+        def __init__(self, master=None):
+
+            self.fontePadrao = ("Segoe UI", "10")
+
+            self.widget1 = Frame(master)
+            self.widget1["pady"] = 10
+            self.widget1.pack()
+
+            self.widget2 = Frame(master)
+            self.widget2["padx"] = 5
+            self.widget2.pack()
+
+            self.widget3 = Frame(master)
+            self.widget3["padx"] = 5
+            self.widget3.pack()
+
+            self.widget4 = Frame(master)
+            self.widget4["pady"] = 10
+            self.widget4.pack()
+
+            self.titulo1 = Label(self.widget1, text="AVISOS")
+            self.titulo1["font"] = ["Segoe UI", "10", "bold"]
+            self.titulo1.pack()
+
+            self.aviso2 = Label(self.widget2, text="Durante a execução do programa, não mexa no mouse ou no teclado!", font = self.fontePadrao)
+            self.aviso2.pack(side = LEFT)
+
+            self.aviso3 = Label(self.widget3, text="Coloque o status do Teams como Não Incomodar, feche seu email e outros programas que tenham notificação!", font = self.fontePadrao)
+            self.aviso3.pack(side = LEFT)
+
+            self.autenticar = Button(self.widget4, font = self.fontePadrao)
+            self.autenticar["text"] = "OK"
+            self.autenticar["width"] = 12
+            self.autenticar["command"] = self.sair
+            self.autenticar.pack()
+            
+        def sair(self):
+            root.destroy()
+
+        def destroy():
+            window.destroy()
+
+    #Caixa para inserir usuario de entrada do Sienge
+    class Login:
+        def __init__(self, master=None):
+
+            self.fontePadrao = ("Segoe UI", "10")
+
+            self.widget1 = Frame(master)
+            self.widget1["pady"] = 15
+            self.widget1.pack()
+
+            self.widget2 = Frame(master)
+            self.widget2["padx"] = 5
+            self.widget2.pack()
+
+            self.widget3 = Frame(master)
+            self.widget3["padx"] = 5
+            self.widget3.pack()
+
+            self.widget4 = Frame(master)
+            self.widget4["pady"] = 5
+            self.widget4.pack()
+
+            self.widget5 = Frame(master)
+            self.widget5["padx"] = 20
+            self.widget5.pack()
+
+            self.titulo = Label(self.widget1, text="Dados do usuário para conectar no Sienge")
+            self.titulo["font"] = ["Segoe UI", "12", "bold"]
+            self.titulo.pack()
+
+            self.usuario = Label(self.widget2, text="Usuário", font = self.fontePadrao)
+            self.usuario.pack(side = LEFT)
+
+            self.nome = Entry(self.widget2)
+            self.nome["width"] = 30
+            self.nome["font"] = self.fontePadrao
+            self.nome.pack(side = LEFT)
+
+            self.senhaLabel = Label(self.widget3, text="Senha", font = self.fontePadrao)
+            self.senhaLabel.pack(side = LEFT)
+
+            self.senha = Entry(self.widget3)
+            self.senha["width"] = 30
+            self.senha["font"] = self.fontePadrao
+            self.senha.pack(side = LEFT)
+
+            self.aviso = Label(self.widget4, text="Confira usuário e senha, é necessário que estejam corretos!!")
+            self.aviso["font"] = ["Segoe UI", "10", "bold"]
+            self.aviso.pack()
+
+            self.autenticar = Button(self.widget5, font = self.fontePadrao)
+            self.autenticar["text"] = "Continuar"
+            self.autenticar["width"] = 12
+            self.autenticar["command"] = self.salvarSenha
+            self.autenticar.pack()
+
+        def salvarSenha(self):
+            global usuario
+            global senha
+            usuario = self.nome.get()
+            senha = self.senha.get()
+            root.destroy()
+
+        def destroy():
+            window.destroy()
+
+    #Caixa para inserir intervalo de datas e download da planilha para o Modelo_OrdemCompra
+    class Application:
+        def __init__(self, master=None):
+
+            self.fontePadrao = ("Segoe UI", "10")
+
+            self.widget1 = Frame(master)
+            self.widget1["pady"] = 10
+            self.widget1.pack()
+
+            self.widget2 = Frame(master)
+            self.widget2["padx"] = 20
+            self.widget2.pack()
+
+            self.widget3 = Frame(master)
+            self.widget3["pady"] = 20
+            self.widget3.pack()
+
+            self.titulo1 = Label(self.widget1, text="RELATÓRIO DE EMISSÃO/RELAÇÃO DE PEDIDOS DE COMPRA")
+            self.titulo1["font"] = ["Segoe UI", "10", "bold"]
+            self.titulo1.pack()
+
+            self.periodo = Label(self.widget2, text="Período do pedido", font = self.fontePadrao)
+            self.periodo.pack(side = LEFT)
+
+            self.data = Entry(self.widget2)
+            self.data["width"] = 30
+            self.data["font"] = self.fontePadrao
+            self.data.pack(side = LEFT)
+
+            self.texto = Label(self.widget2, text=" à ", font = self.fontePadrao)
+            self.texto.pack(side = LEFT)
+
+            self.data2 = Entry(self.widget2)
+            self.data2["width"] = 30
+            self.data2["font"] = self.fontePadrao
+            self.data2.pack(side = LEFT)
+
+            self.button = Button(self.widget3, font = self.fontePadrao)
+            self.button["text"] = "Salvar dados"
+            self.button["width"] = 12
+            self.button["command"] = self.salvar
+            self.button.pack()
+
+        def salvar(self):
+            global data1
+            global data2
+            data1 = self.data.get()
+            data2 = self.data2.get()
+            start.destroy()
+
+        def destroy():
+            window.destroy()
+            
+    class LoginTableau:
+        def __init__(self, master=None):
+        
+            self.fontePadrao = ("Segoe UI", "10")
+
+            #definindo containers
+            self.widget1 = Frame(master)
+            self.widget1["pady"] = 15
+            #gerenciador de geometria
+            self.widget1.pack()
+
+            self.widget2 = Frame(master)
+            self.widget2["padx"] = 5
+            self.widget2.pack()
+
+            self.widget3 = Frame(master)
+            self.widget3["padx"] = 5
+            self.widget3.pack()
+
+            self.widget4 = Frame(master)
+            self.widget4["pady"] = 5
+            self.widget4.pack()
+
+            self.widget5 = Frame(master)
+            self.widget5["padx"] = 20
+            self.widget5.pack()
+
+            #criando um label(container, texto)
+            self.titulo = Label(self.widget1, text="Dados do usuário para conectar ao Tableau")
+            self.titulo["font"] = ["Segoe UI", "12", "bold"]
+            self.titulo.pack()
+
+            self.usuario = Label(self.widget2, text="Usuário", font = self.fontePadrao)
+            self.usuario.pack(side = LEFT)
+
+            self.nome = Entry(self.widget2)
+            self.nome["width"] = 30
+            self.nome["font"] = self.fontePadrao
+            self.nome.pack(side = LEFT)
+
+            self.senhaLabel = Label(self.widget3, text="Senha", font = self.fontePadrao)
+            self.senhaLabel.pack(side = LEFT)
+
+            self.senha = Entry(self.widget3)
+            self.senha["width"] = 30
+            self.senha["font"] = self.fontePadrao
+            #self.senha["show"] = "*"
+            self.senha.pack(side = LEFT)
+
+            self.aviso = Label(self.widget4, text="Confira usuário e senha, é necessário que estejam corretos!!")
+            self.aviso["font"] = ["Segoe UI", "10", "bold"]
+            self.aviso.pack()
+
+            self.autenticar = Button(self.widget5, font = self.fontePadrao)
+            self.autenticar["text"] = "Continuar"
+            self.autenticar["width"] = 12
+            self.autenticar["command"] = self.salvarSenha
+            self.autenticar.pack()
+
+        def salvarSenha(self):
+            global usuariot
+            global senhat
+            usuariot = self.nome.get()
+            senhat = self.senha.get()        
+            root.destroy()
+
+        def destroy():
+            window.destroy()   
+
+    #criando caixa de mensagem final
+    class MensagemFinal:
+        def __init__(self, master=None):
+
+            self.fontePadrao = ("Segoe UI", "10")
+
+            self.widget1 = Frame(master)
+            self.widget1["pady"] = 10
+            self.widget1.pack()
+
+            self.widget2 = Frame(master)
+            self.widget2["pady"] = 5
+            self.widget2.pack()
+
+            self.widget3 = Frame(master)
+            self.widget3["pady"] = 10
+            self.widget3.pack()
+
+            self.titulo = Label(self.widget1, text="ATENÇÃO")
+            self.titulo["font"] = ["Segoe UI", "10", "bold"]
+            self.titulo.pack()
+
+            self.titulo = Label(self.widget2, text="Relatório de variáveis finalizado")
+            self.titulo.pack()
+
+            self.autenticar = Button(self.widget3, font = self.fontePadrao)
+            self.autenticar["text"] = "Ok"
+            self.autenticar["width"] = 12
+            self.autenticar["command"] = self.finalizar
+            self.autenticar.pack()
+
+        def finalizar(self):
+            root.destroy()
+
+        def destroy():
+            window.destroy()
+                    
+    #PROGRAMA
+    
+    desktop = Path.home()
+    #conferindo se tem algum arquivo com o nome relatorio nos downloads
+    fileName = str(desktop) +  "/Downloads/relatorio.xlsx"
+    if os.path.isfile(fileName) == True :
+        os.remove(str(desktop) + "/Downloads/relatorio.xlsx")
+
+    #chama avisos
+    root = Tk()
+    Aviso(root)
+    root.title("Avisos do App")
+    root.mainloop()
+    
+    #chama usuario Sienge
+    root = Tk()
+    Login(root)
+    root.title("Login Sienge")
+    root.mainloop()
+    
+    #chama datas
+    start = Tk()
+    Application(start)
+    start.title("Periodo de extração Sienge")
+    start.mainloop()
+    
+    #chama usuario Tableau
+    root = Tk()
+    LoginTableau(root)
+    root.title("Login Tableau")
+    root.mainloop()
+
+    ok = windll.user32.BlockInput(True) #enable block
+    
+    #RELATÓRIO DE EMISSÃO DE PEDIDOS DE COMPRA - download
+    os.startfile("http://mascate.autoglass.com.br:9090/sienge/")
+    time.sleep(2)
+    pyautogui.PAUSE = 1
+    pyautogui.write(usuario)
+    pyautogui.press("tab")
+    pyautogui.write(senha)
+    pyautogui.press("tab")
+    pyautogui.press("enter")
+    pyautogui.hotkey('ctrl','l')
+    url = "http://mascate.autoglass.com.br:9090/sienge/sienge8/src/index-server.html#/page/2101"
+    pyperclip.copy(url)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.press("enter")
+    pyautogui.PAUSE = 0.2
+    time.sleep(2)
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.press("enter")
+    pyautogui.press('down',presses = 3)
+    pyautogui.press("enter")
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyperclip.copy(data2)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.hotkey('shift','tab')
+    pyperclip.copy(data1)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.press("enter")
+    
+    while (os.path.exists(str(desktop) + "/Downloads/relatorio.xlsx") == False) :
+        time.sleep(5)
+        pyautogui.click(1299, 203)
+        print("aguardando")
+
+    pyautogui.hotkey('ctrl','w')
+    pyautogui.hotkey('ctrl','w')
+
+    print("DOWNLOAD DO RELATÓRIO DE EMISSÃO DE PEDIDOS DE COMPRA CONCLUIDO")
+
+    #RELATÓRIO DE EMISSÃO DE PEDIDOS DE COMPRA - importação + tratamento de dados
+    dados_excel = pd.read_excel(str(desktop) + "/Downloads/relatorio.xlsx")
+    qtde = dados_excel.shape[0]
+    os.remove(str(desktop) + "/Downloads/relatorio.xlsx")
+
+    #gravando o num do pedido em uma lista
+    pedido = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,0] == "Pedido":
+            pedido.append(dados_excel.iloc[i,1])
+
+    #gravando a cotação em uma lista
+    cotacao = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,27] == "Cotação":
+            if pd.isnull(dados_excel.iloc[i+1,27]): #qdo for nulo, inserir nulo no dataframe
+                cotacao.append(None)
+            else:
+                cot = str(dados_excel.iloc[i+1,27])
+                cotacao.append(cot)       
+
+    #gravando a solicitação em uma lista
+    solicitacao = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,30] == "Solic":
+            if pd.isnull(dados_excel.iloc[i+1,30]):
+                solicitacao.append(None)
+            else:
+                solicitacao.append(dados_excel.iloc[i+1,30])
+
+    #gravando o menor valor orçado (sub-total + frete + outras despesas) em uma lista
+    n = 0
+    menorvalor = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,24] == "Sub-total":
+            x = dados_excel.iloc[i,28] + dados_excel.iloc[i+2,28] + dados_excel.iloc[i+3,28]
+            menorvalor.append(x)
+
+    #criando o data frame com as listas extraidas        
+    obj = {'Pedido': pedido, 'Cotacao': cotacao, 'Solicitacao': solicitacao, 'Menor_Valor_Orcado': menorvalor}
+    df_emissao = pd.DataFrame(data=obj)
+
+    #download da planilha para o Modelo_PedidosCompra
+    os.startfile("http://mascate.autoglass.com.br:9090/sienge/sienge8/src/index-server.html#/page/1941")
+    time.sleep(3)
+    pyautogui.PAUSE = 0.2
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.press("enter")
+    pyautogui.press('down',presses = 4)
+    pyautogui.press("enter")
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyautogui.hotkey('shift','tab')
+    pyperclip.copy(data2)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.hotkey('shift','tab')
+    pyperclip.copy(data1)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.press("enter")
+
+    while (os.path.exists(str(desktop) + "/Downloads/relatorio.xlsx") == False) :
+        time.sleep(5)
+        pyautogui.click(1299, 203)
+        print("aguardando")
+
+    pyautogui.hotkey('ctrl','w')
+    pyautogui.hotkey('ctrl','w')
+
+    print("DOWNLOAD DO RELATÓRIO DE RELAÇÃO DE PEDIDOS DE COMPRA CONCLUIDO")
+
+    #RELATÓRIO DE RELAÇÃO DE PEDIDOS DE COMPRA - importação + tratamento de dados
+    dados_excel = pd.read_excel(str(desktop) + "/Downloads/relatorio.xlsx")
+    qtde = dados_excel.shape[0]
+    os.remove(str(desktop) + "/Downloads/relatorio.xlsx")
+
+    #gravando o num do pedido em uma lista
+    n = 0
+    pedido = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,0] == "Pedido":
+            pedido.insert(n, dados_excel.iloc[i,2])
+            n = n + 1
+            
+    tam = len(pedido)
+
+    #gravando o nome do comprador em uma lista
+    n = 0
+    comprador = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,15] == "Comprador":
+            comprador.insert(n, dados_excel.iloc[i,17])
+            n = n + 1
+
+    #gravando a data previsão em uma lista, pegando a maior data
+    n = 0
+    data = [None] * tam
+    colun16 = dados_excel.iloc[:,16]
+    colun16 = colun16.dropna().reset_index(drop=True)
+    qtde2 = len(colun16)
+    d_1 = datetime.strptime('01/01/1900','%d/%m/%Y').date()
+
+    for i in range(qtde2-1):
+        j = i + 1
+        if colun16.loc[j] != "Dt. entrega":
+            d_2 = datetime.strptime(str(colun16.iloc[j]),'%d/%m/%Y').date()
+            if (d_2 > d_1):
+                d_1 = d_2
+            data[n] = str(d_1)
+        else:
+            d_1 = datetime.strptime('01/01/1900','%d/%m/%Y').date()
+            n = n + 1
+
+    data = pd.to_datetime(data)
+
+    #gravando o total entregue em uma lista
+    n = 0
+    total = []
+
+    for i in range(qtde):
+        if dados_excel.iloc[i,0] == "Total entregue":
+            total.insert(n, dados_excel.iloc[i,18])
+            n = n + 1
+
+    #criando o data frame com as listas extraidas        
+    obj = {'Pedido': pedido, 'Comprador': comprador, 'Data_Entrega': data, 'Total_Entregue': total}
+    df_relacao = pd.DataFrame(data=obj)
+
+    #filtrando os dados de acordo com a data necessaria (mês anterior)
+    today = dt.date.today()
+    first = today.replace(day=1)
+    lastday = first - dt.timedelta(days=1)
+    firstday = str(lastday.replace(day=1))
+    lastday = str(lastday)
+
+    filtro = (df_relacao['Data_Entrega'] >= firstday) & (df_relacao['Data_Entrega'] <= lastday)
+    df_filtrado = df_relacao[filtro]
+
+    #juntando os dois dataframes
+    relatorio = pd.merge(df_emissao, df_filtrado, on = 'Pedido', how = 'right')
+    qtde = relatorio.shape[0]
+    row = []
+
+    for i in range(qtde):
+        tam = len(str(relatorio.iloc[i,2]))
+        if ( tam > 5 ):
+            txt = relatorio.iloc[i,2]
+            relatorio.iloc[i,2] = txt[0:5]
+
+    #criando colunas calculadas
+    relatorio['Desconto'] = relatorio['Menor_Valor_Orcado'] - relatorio['Total_Entregue']
+    relatorio['Reducao'] = (relatorio['Desconto'] / relatorio['Menor_Valor_Orcado'])
+
+    #reordenando as colunas
+    relatorio = relatorio[['Pedido', 'Cotacao', 'Solicitacao', 'Comprador', 'Menor_Valor_Orcado', 'Total_Entregue', 'Desconto', 'Reducao']] 
+
+    print("JUNÇÃO DOS RELATÓRIOS CONCLUIDA")
+    
+    #tratando alguma solicitação que venha vazia no relatorio
+    if relatorio['Solicitacao'].isnull().sum() != 0:
+        df_null = relatorio.loc[relatorio['Solicitacao'].isnull()]
+        relatorio = relatorio.drop(df_null.index)
+
+    #download dos dados do Mapa de Controle pelo Tableau
+    os.startfile("https://tableau.autoglass.com.br/#/signin")
+    time.sleep(2)
+    pyautogui.hotkey('ctrl','0')
+    pyautogui.PAUSE = 1
+    pyautogui.write(usuariot)
+    pyautogui.press("tab")
+    pyautogui.write(senhat)
+    pyautogui.press("tab")
+    pyautogui.press("enter")
+    time.sleep(1)
+    pyautogui.hotkey('ctrl','l')
+    url = "https://tableau.autoglass.com.br/#/views/Solicitaesedatas/Painel1?:iid=1"
+    pyperclip.copy(url)
+    pyautogui.hotkey('ctrl','v')
+    pyautogui.press("enter")
+    time.sleep(5)
+    pyautogui.click(393, 289)
+    time.sleep(3)
+    pyautogui.click(1124, 199)
+    pyautogui.press("tab")
+    pyautogui.press("enter")
+    time.sleep(5)
+    pyautogui.press("tab", presses = 2)
+    pyautogui.press("enter")
+
+    while (os.path.exists(str(desktop) + "/Downloads/Planilha_1_data.csv") == False) :
+        time.sleep(2)
+        print("aguardando")
+
+    pyautogui.hotkey('ctrl','j')
+    pyautogui.hotkey('ctrl','w')
+    pyautogui.hotkey('ctrl','w')
+
+    print("DOWNLOAD DO RELATÓRIO DE MAPA DE CONTROLE CONCLUIDO")
+
+    #importando o relatório extraido do Tableau
+    time.sleep(2)
+    dados_solmc = pd.read_csv(str(desktop) + "/Downloads/Planilha_1_data.csv", delimiter=';')
+    dados_solmc.columns = ['Solicitacao', 'Data_NF', 'Data_SC']
+    dados_solmc['Data_SC'] = pd.to_datetime(dados_solmc['Data_SC'], format = '%d/%m/%Y %H:%M:%S')
+    dados_solmc['Data_NF'] = pd.to_datetime(dados_solmc['Data_NF'], format = '%d/%m/%Y %H:%M:%S')
+    time.sleep(2)
+    os.remove(str(desktop) + "/Downloads/Planilha_1_data.csv")
+
+    #juntando ao relatorio
+    relatorio['Solicitacao'] = relatorio['Solicitacao'].astype(int)
+    relatoriofinal = pd.merge(relatorio, dados_solmc, on = 'Solicitacao',  how = 'left')
+
+    #criando colunas calculadas
+    relatoriofinal['#Dias'] = relatoriofinal['Data_NF'] - relatoriofinal['Data_SC']
+
+    print("JUNÇÃO DOS RELATÓRIOS CONCLUIDA")
+    
+    #tratando alguma data que tenha sido alterada no dia anterior e o tableau não tenha puxado ela
+    if relatoriofinal['Data_NF'].isnull().sum() != 0:
+        df_nat = relatoriofinal.loc[relatoriofinal['Data_NF'].isnull()]
+        relatoriofinal = relatoriofinal.drop(df_nat.index)
+    
+    #pegando as observações dos pedidos com % = 0
+    qtde = relatoriofinal.shape[0]
+    #criando uma lista nula, do tamanho da solicitação
+    obs_lista = [None] * qtde
+
+    for i in range(qtde):
+        if relatoriofinal.iloc[i,7] == 0:
+            if windll.user32.OpenClipboard(None):
+                windll.user32.EmptyClipboard()
+                windll.user32.CloseClipboard()
+            ped = str(relatoriofinal.iloc[i,0])
+            os.startfile("http://mascate.autoglass.com.br:9090/sienge/sienge8/src/index-server.html#/page/1441")
+            time.sleep(3)
+            pyautogui.hotkey('ctrl','0')
+            pyautogui.PAUSE = 0.8
+            pyautogui.click(712, 220)
+            pyautogui.press("tab")
+            pyautogui.write(ped)
+            pyautogui.press("enter")
+            pyautogui.press("tab", presses = 19)
+            pyautogui.click(1295, 631)
+            pyautogui.hotkey('shift','tab')
+            pyautogui.hotkey('ctrl','a')
+            pyautogui.hotkey('ctrl','c')
+            obs = pyperclip.paste()
+            obs_lista[i] = str(obs)
+            pyautogui.hotkey('ctrl','w')
+            
+    relatoriofinal['Obs'] = obs_lista
+    #colocando os dados que foram tirados pq estavam com solicitação nula ou NaT
+    try:
+        relatoriofinal = relatoriofinal.append(df_nat, sort=False)
+    except NameError:
+        pass
+
+    try:
+        relatoriofinal = relatoriofinal.append(df_null, sort=False)
+    except NameError:
+        pass
+    
+    today = dt.date.today()
+    first = today.replace(day=1)
+    lastday = first - dt.timedelta(days=1)
+    mes = lastday.strftime("%m")
+    ano = today.year
+
+    nome = "Variavel_" + str(mes) + str(ano)
+    relatoriofinal.to_excel(nome + '.xlsx',encoding='utf-8',index=False)
+    path_relatoriofinal = os.getcwd()
+    shutil.move(str(path_relatoriofinal) + '/' + nome + '.xlsx', str(desktop) + "/Downloads")
+
+    ok = windll.user32.BlockInput(False) #disable block 
+
+    #para voltar a funcionar corretamente
+    pyautogui.hotkey('ctrl','shift', 'esc')
+    time.sleep(1)
+    pyautogui.hotkey('alt','F4')
+
+    #chama a mensagem final
+    root = Tk()
+    MensagemFinal(root)
+    root.mainloop()
+    
+except Exception as e: 
+    print(e)
+    ok = windll.user32.BlockInput(False) #disable block 
+
+    #para voltar a funcionar corretamente
+    pyautogui.hotkey('ctrl','shift', 'esc')
+    time.sleep(1)
+    pyautogui.hotkey('alt','F4')
+    
+    input("Copie o erro e entre em contato com o desenvolvedor do App!")    
